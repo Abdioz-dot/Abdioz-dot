@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircleMath — Dunia Lingkaran</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #FFD93D;
+  --orange: #FF6B35;
+  --pink: #FF4D8D;
+  --purple: #9B5DE5;
+  --blue: #00BBF9;
+  --green: #00F5D4;
+  --light: #FFF9F0;
+  --white: #FFFFFF;
+  --dark: #1A1A2E;
+  --card-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  --radius: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--light);
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.bg-circles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.07;
+  animation: float 8s ease-in-out infinite;
+}
+.bg-circle:nth-child(1) { width:300px;height:300px;background:var(--purple);top:-50px;left:-80px;animation-delay:0s; }
+.bg-circle:nth-child(2) { width:200px;height:200px;background:var(--blue);top:20%;right:-50px;animation-delay:2s; }
+.bg-circle:nth-child(3) { width:250px;height:250px;background:var(--pink);bottom:10%;left:10%;animation-delay:4s; }
+.bg-circle:nth-child(4) { width:150px;height:150px;background:var(--orange);bottom:20%;right:15%;animation-delay:6s; }
+@keyframes float {
+  0%,100%{transform:translateY(0) scale(1);}
+  50%{transform:translateY(-20px) scale(1.05);}
+}
+
+/* ===== NAV ===== */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,249,240,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 3px solid var(--yellow);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+.nav-logo {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--orange), var(--pink), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-logo span { font-size: 1.8rem; }
+.nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.nav-links a {
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--dark);
+  transition: all 0.2s;
+}
+.nav-links a:hover { background: var(--yellow); transform: translateY(-2px); }
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+}
+.hero-badge {
+  display: inline-block;
+  background: var(--yellow);
+  color: var(--dark);
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 6px 18px;
+  border-radius: 50px;
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  animation: bounceIn 0.6s ease;
+}
+.hero h1 {
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  animation: slideUp 0.7s ease 0.1s both;
+}
+.hero h1 .highlight {
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero p {
+  font-size: 1.2rem;
+  max-width: 560px;
+  color: #555;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+  animation: slideUp 0.7s ease 0.2s both;
+}
+.hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: slideUp 0.7s ease 0.3s both; }
+.btn {
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary { background: linear-gradient(135deg, var(--orange), var(--pink)); color: white; box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+.btn-secondary { background: var(--white); color: var(--dark); border: 3px solid var(--dark); }
+.btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+
+/* Animated circle illustration */
+.hero-visual {
+  margin-top: 3rem;
+  animation: slideUp 0.7s ease 0.4s both;
+}
+#hero-canvas { display: block; margin: 0 auto; }
+
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounceIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+
+/* ===== SECTION STYLES ===== */
+section { position: relative; z-index: 1; padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.section-title h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.section-title p { color: #666; font-size: 1.05rem; max-width: 500px; margin: 0 auto; }
+.pill {
+  display: inline-block;
+  padding: 4px 16px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.8rem;
+}
+
+/* ===== CARDS ===== */
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s;
+  border: 2px solid transparent;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.card:hover { transform: translateY(-8px); box-shadow: 0 16px 48px rgba(0,0,0,0.15); border-color: var(--yellow); }
+.card-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+.card h3 { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
+.card p { color: #555; line-height: 1.7; font-size: 0.95rem; }
+.card.yellow::before { background: var(--yellow); }
+.card.orange::before { background: var(--orange); }
+.card.pink::before { background: var(--pink); }
+.card.purple::before { background: var(--purple); }
+.card.blue::before { background: var(--blue); }
+.card.green::before { background: var(--green); }
+
+/* ===== FORMULA SHOWCASE ===== */
+.formula-section { background: linear-gradient(135deg, #667eea22, #764ba222); border-radius: 32px; padding: 4rem 2rem; }
+.formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.formula-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.8rem;
+  text-align: center;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s;
+}
+.formula-card:hover { transform: scale(1.05); }
+.formula-card .formula-name { font-size: 0.9rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.8rem; }
+.formula-box {
+  background: var(--dark);
+  color: white;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.8rem 0;
+}
+.formula-card .formula-desc { font-size: 0.85rem; color: #666; line-height: 1.6; }
+.formula-card.f1 .formula-box { background: linear-gradient(135deg, var(--orange), var(--pink)); }
+.formula-card.f2 .formula-box { background: linear-gradient(135deg, var(--purple), var(--blue)); }
+.formula-card.f3 .formula-box { background: linear-gradient(135deg, var(--green), var(--blue)); }
+.formula-card.f4 .formula-box { background: linear-gradient(135deg, var(--yellow), var(--orange)); color: var(--dark); }
+
+/* ===== INTERACTIVE DIAGRAM ===== */
+.diagram-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+@media(max-width:768px) { .diagram-section { grid-template-columns: 1fr; } }
+.diagram-controls { display: flex; flex-direction: column; gap: 1.2rem; }
+.slider-group label { font-weight: 700; font-size: 1rem; margin-bottom: 6px; display: block; }
+.slider-group input[type=range] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 8px;
+  border-radius: 50px;
+  background: linear-gradient(to right, var(--orange), var(--pink));
+  outline: none;
+}
+.slider-group input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--orange);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.result-display {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+.result-box {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.result-box .label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #999; margin-bottom: 4px; }
+.result-box .value { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; }
+.result-box.r1 .value { color: var(--orange); }
+.result-box.r2 .value { color: var(--purple); }
+.result-box.r3 .value { color: var(--blue); }
+.result-box.r4 .value { color: var(--green); }
+
+/* ===== QUIZ SECTION ===== */
+.quiz-wrapper {
+  background: white;
+  border-radius: 28px;
+  padding: 3rem;
+  box-shadow: var(--card-shadow);
+  max-width: 680px;
+  margin: 0 auto;
+}
+.quiz-progress { display: flex; gap: 6px; margin-bottom: 2rem; }
+.quiz-dot {
+  flex: 1; height: 8px; border-radius: 50px;
+  background: #eee;
+  transition: all 0.3s;
+}
+.quiz-dot.done { background: var(--green); }
+.quiz-dot.current { background: var(--orange); }
+.quiz-question {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+.quiz-options { display: grid; gap: 0.8rem; }
+.quiz-option {
+  padding: 14px 20px;
+  border: 3px solid #eee;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: left;
+  background: white;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 12px;
+}
+.quiz-option:hover { border-color: var(--blue); background: #f0faff; transform: translateX(5px); }
+.quiz-option.correct { border-color: var(--green); background: #e8fdf8; color: #006d5b; }
+.quiz-option.wrong { border-color: var(--pink); background: #fff0f5; color: #c0003c; }
+.quiz-option.disabled { pointer-events: none; }
+.option-letter {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 900;
+  flex-shrink: 0;
+}
+.quiz-option.correct .option-letter { background: var(--green); color: white; }
+.quiz-option.wrong .option-letter { background: var(--pink); color: white; }
+.quiz-feedback {
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 14px;
+  font-weight: 700;
+  display: none;
+}
+.quiz-feedback.show { display: block; animation: bounceIn 0.3s ease; }
+.quiz-feedback.correct { background: #e8fdf8; color: #006d5b; border: 2px solid var(--green); }
+.quiz-feedback.wrong { background: #fff0f5; color: #c0003c; border: 2px solid var(--pink); }
+.quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
+.quiz-score { font-size: 1.1rem; font-weight: 800; color: #888; }
+.quiz-result {
+  text-align: center;
+  padding: 2rem 0;
+}
+.quiz-result .score-big { font-family: 'Baloo 2', cursive; font-size: 5rem; font-weight: 800; }
+.quiz-result p { font-size: 1.1rem; color: #555; margin-top: 0.5rem; }
+.stars { font-size: 2.5rem; margin: 1rem 0; }
+
+/* ===== GAME SECTION ===== */
+.game-container {
+  background: linear-gradient(135deg, #1A1A2E, #16213E);
+  border-radius: 28px;
+  padding: 3rem;
+  color: white;
+  max-width: 700px;
+  margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.game-title { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800; }
+.game-stats { display: flex; gap: 1rem; }
+.game-stat {
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 8px 16px;
+  text-align: center;
+}
+.game-stat .label { font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+.game-stat .val { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; color: var(--yellow); }
+#game-canvas { display: block; margin: 0 auto; border-radius: 16px; cursor: pointer; }
+.game-controls { display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap; }
+.game-btn {
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+.game-btn:hover { transform: translateY(-3px); }
+.game-btn.start { background: linear-gradient(135deg, var(--green), var(--blue)); color: var(--dark); }
+.game-btn.reset { background: rgba(255,255,255,0.15); color: white; }
+.game-message {
+  text-align: center;
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  min-height: 30px;
+  color: var(--yellow);
+}
+
+/* ===== TIPS ===== */
+.tips-section {
+  background: linear-gradient(135deg, var(--yellow), var(--orange));
+  border-radius: 28px;
+  padding: 4rem 3rem;
+  color: var(--dark);
+}
+.tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.tip-card {
+  background: rgba(255,255,255,0.85);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.2s;
+}
+.tip-card:hover { transform: translateY(-5px); background: white; }
+.tip-card .tip-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+.tip-card h4 { font-weight: 800; font-size: 1rem; margin-bottom: 0.4rem; }
+.tip-card p { font-size: 0.85rem; color: #555; line-height: 1.6; }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--dark);
+  color: white;
+  text-align: center;
+  padding: 3rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+footer h3 { font-family: 'Baloo 2', cursive; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--yellow), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+footer p { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+
+/* ===== TOOLTIP ===== */
+.tooltip { position: relative; cursor: help; }
+.tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+.tooltip:hover::after { opacity: 1; }
+
+/* ===== SCROLL ANIMATIONS ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:600px) {
+  nav { padding: 0 1rem; }
+  .nav-links { display: none; }
+  section { padding: 3rem 1rem; }
+  .quiz-wrapper { padding: 1.5rem; }
+  .game-container { padding: 1.5rem; }
+  .tips-section { padding: 2.5rem 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-circles">
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>⭕</span> CircleMath</div>
+  <div class="nav-links">
+    <a href="javascript:void(0)" onclick="goTo('materi')">📚 Materi</a>
+    <a href="javascript:void(0)" onclick="goTo('rumus')">📐 Rumus</a>
+    <a href="javascript:void(0)" onclick="goTo('interaktif')">🔬 Eksplor</a>
+    <a href="javascript:void(0)" onclick="goTo('latihan')">✏️ Latihan</a>
+    <a href="javascript:void(0)" onclick="goTo('game')">🎮 Game</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✨ Belajar Matematika Itu Seru!</div>
+  <h1>Dunia <span class="highlight">Lingkaran</span><br>Penuh Kejutan!</h1>
+  <p>Pelajari lingkaran dengan cara yang menyenangkan — dari materi, rumus interaktif, hingga game seru yang bikin kamu ketagihan!</p>
+  <div class="hero-buttons">
+    <a href="javascript:void(0)" onclick="goTo('materi')" class="btn btn-primary">🚀 Mulai Belajar</a>
+    <a href="javascript:void(0)" onclick="goTo('game')" class="btn btn-secondary">🎮 Main Game</a>
+  </div>
+  <div class="hero-visual">
+    <canvas id="hero-canvas" width="360" height="260"></canvas>
+  </div>
+</section>
+
+<!-- MATERI -->
+<section id="materi">
+  <div class="section-title reveal">
+    <div class="pill" style="background:var(--yellow)">📚 Materi</div>
+    <h2>Kenalan dengan Lingkaran!</h2>
+    <p>Pahami bagian-bagian lingkaran yang perlu kamu ketahui</p>
+  </div>
+  <div class="cards-grid">
+    <div class="card yellow reveal">
+      <span class="card-icon">⭕</span>
+      <h3>Lingkaran</h3>
+      <p>Himpunan semua titik pada bidang datar yang berjarak sama (radius) dari satu titik tetap yang disebut <strong>titik pusat</strong>. Jarak tersebut disebut <em>jari-jari</em>.</p>
+    </div>
+    <div class="card orange reveal">
+      <span class="card-icon">📍</span>
+      <h3>Titik Pusat (O)</h3>
+      <p>Titik yang menjadi <strong>pusat lingkaran</strong>. Semua titik pada lingkaran berjarak sama dari titik pusat ini. Dilambangkan dengan huruf O.</p>
+    </div>
+    <div class="card pink reveal">
+      <span class="card-icon">📏</span>
+      <h3>Jari-jari (r)</h3>
+      <p>Jarak dari titik pusat ke setiap titik pada lingkaran. <strong>r = ½ × d</strong>. Semua jari-jari pada satu lingkaran memiliki panjang yang sama.</p>
+    </div>
+    <div class="card purple reveal">
+      <span class="card-icon">↔️</span>
+      <h3>Diameter (d)</h3>
+      <p>Tali busur yang melalui titik pusat. Panjangnya <strong>2 kali jari-jari</strong>. Diameter adalah tali busur terpanjang dalam sebuah lingkaran.</p>
+    </div>
+    <div class="card blue reveal">
+      <span class="card-icon">🌈</span>
+      <h3>Busur (Arc)</h3>
+      <p>Bagian dari keliling lingkaran. Ada <strong>busur kecil</strong> (minor arc) dan <strong>busur besar</strong> (major arc). Panjang busur bergantung pada sudut pusatnya.</p>
+    </div>
+    <div class="card green reveal">
+      <span class="card-icon">🍕</span>
+      <h3>Juring (Sector)</h3>
+      <p>Daerah di dalam lingkaran yang dibatasi oleh dua jari-jari dan sebuah busur. Mirip seperti potongan pizza! Luasnya sebanding dengan sudut pusatnya.</p>
+    </div>
+    <div class="card yellow reveal">
+      <span class="card-icon">🎯</span>
+      <h3>Tali Busur (Chord)</h3>
+      <p>Ruas garis yang menghubungkan dua titik pada lingkaran. Berbeda dengan diameter, tali busur <strong>tidak harus melewati</strong> titik pusat.</p>
+    </div>
+    <div class="card orange reveal">
+      <span class="card-icon">🌙</span>
+      <h3>Tembereng</h3>
+      <p>Daerah di dalam lingkaran yang dibatasi oleh sebuah <strong>tali busur dan busur lingkaran</strong>. Seperti bentuk bulan sabit!</p>
+    </div>
+    <div class="card pink reveal">
+      <span class="card-icon">📐</span>
+      <h3>Sudut Pusat</h3>
+      <p>Sudut yang titik puncaknya berada di <strong>titik pusat lingkaran</strong>. Besar busur yang dihadapi sama dengan besar sudut pusatnya.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RUMUS -->
+<section id="rumus" style="padding-top:2rem">
+  <div class="formula-section reveal">
+    <div class="section-title">
+      <div class="pill" style="background:var(--purple);color:white">📐 Rumus Penting</div>
+      <h2>Rumus Ajaib Lingkaran</h2>
+      <p>Hafalkan 4 rumus ini dan kamu bisa menyelesaikan hampir semua soal lingkaran!</p>
+    </div>
+    <div class="formula-grid">
+      <div class="formula-card f1 reveal">
+        <div class="formula-name">Keliling Lingkaran</div>
+        <div class="formula-box">K = 2πr</div>
+        <div class="formula-box" style="background:rgba(0,0,0,0.08); color:var(--dark); font-size:1.1rem;">K = π × d</div>
+        <p class="formula-desc">π ≈ 3,14 atau ²²⁄₇<br>r = jari-jari, d = diameter</p>
+      </div>
+      <div class="formula-card f2 reveal">
+        <div class="formula-name">Luas Lingkaran</div>
+        <div class="formula-box">L = πr²</div>
+        <div class="formula-box" style="background:rgba(0,0,0,0.08); color:var(--dark); font-size:1.1rem;">L = ¼ × π × d²</div>
+        <p class="formula-desc">Kuadratkan jari-jarinya terlebih dahulu, baru dikali π!</p>
+      </div>
+      <div class="formula-card f3 reveal">
+        <div class="formula-name">Panjang Busur</div>
+        <div class="formula-box" style="font-size:1.1rem;">PB = α/360° × 2πr</div>
+        <p class="formula-desc">α = sudut pusat (derajat)<br>r = jari-jari lingkaran</p>
+      </div>
+      <div class="formula-card f4 reveal">
+        <div class="formula-name">Luas Juring</div>
+        <div class="formula-box" style="font-size:1.1rem;">LJ = α/360° × πr²</div>
+        <p class="formula-desc">Juring = "potongan pizza"<br>α = sudut pusat yang sesuai</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERAKTIF -->
+<section id="interaktif">
+  <div class="section-title reveal">
+    <div class="pill" style="background:var(--blue);color:white">🔬 Eksplor</div>
+    <h2>Diagram Interaktif</h2>
+    <p>Geser slider dan lihat bagaimana lingkaran berubah secara real-time!</p>
+  </div>
+  <div class="diagram-section">
+    <div style="text-align:center">
+      <canvas id="diagram-canvas" width="320" height="320" style="border-radius:20px; box-shadow: var(--card-shadow);"></canvas>
+    </div>
+    <div class="diagram-controls reveal">
+      <div class="slider-group">
+        <label>🔵 Jari-jari (r): <strong id="r-val">80</strong> satuan</label>
+        <input type="range" id="r-slider" min="20" max="130" value="80">
+      </div>
+      <div class="slider-group">
+        <label>📐 Sudut Juring (α): <strong id="a-val">90</strong>°</label>
+        <input type="range" id="a-slider" min="10" max="360" value="90">
+      </div>
+      <div class="result-display">
+        <div class="result-box r1">
+          <div class="label">Keliling</div>
+          <div class="value" id="res-k">502.65</div>
+        </div>
+        <div class="result-box r2">
+          <div class="label">Luas</div>
+          <div class="value" id="res-l">20106</div>
+        </div>
+        <div class="result-box r3">
+          <div class="label">Panjang Busur</div>
+          <div class="value" id="res-pb">125.66</div>
+        </div>
+        <div class="result-box r4">
+          <div class="label">Luas Juring</div>
+          <div class="value" id="res-lj">5026</div>
+        </div>
+      </div>
+      <div style="background:#f8f8f8; border-radius:12px; padding:1rem; margin-top:0.5rem; font-size:0.9rem; color:#555; line-height:1.8;">
+        💡 <strong>Coba geser ke 360°</strong> untuk melihat keliling penuh! <br>
+        🎨 <strong>Warna merah</strong> = busur, <strong>hijau</strong> = juring, <strong>biru</strong> = diameter
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LATIHAN -->
+<section id="latihan">
+  <div class="section-title reveal">
+    <div class="pill" style="background:var(--pink);color:white">✏️ Latihan Soal</div>
+    <h2>Uji Kemampuanmu!</h2>
+    <p>10 soal pilihan ganda yang menantang. Bisakah kamu dapat nilai sempurna?</p>
+  </div>
+  <div class="quiz-wrapper reveal">
+    <div class="quiz-progress" id="quiz-progress"></div>
+    <div id="quiz-area">
+      <div class="quiz-question" id="quiz-q"></div>
+      <div class="quiz-options" id="quiz-opts"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <div class="quiz-nav">
+        <div class="quiz-score">Skor: <span id="score-display">0</span>/<span id="total-display">10</span></div>
+        <button class="btn btn-primary" id="next-btn" style="display:none" onclick="nextQuestion()">Lanjut ➜</button>
+      </div>
+    </div>
+    <div id="quiz-result" class="quiz-result" style="display:none"></div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game">
+  <div class="section-title reveal">
+    <div class="pill" style="background:var(--purple);color:white">🎮 Mini Game</div>
+    <h2>Circle Catcher!</h2>
+    <p>Klik lingkaran sebelum menghilang! Setiap lingkaran menampilkan soal matematika yang harus kamu jawab.</p>
+  </div>
+  <div class="game-container reveal">
+    <div class="game-header">
+      <div class="game-title">⭕ Circle Catcher</div>
+      <div class="game-stats">
+        <div class="game-stat">
+          <div class="label">Skor</div>
+          <div class="val" id="g-score">0</div>
+        </div>
+        <div class="game-stat">
+          <div class="label">Level</div>
+          <div class="val" id="g-level">1</div>
+        </div>
+        <div class="game-stat">
+          <div class="label">Nyawa</div>
+          <div class="val" id="g-lives">❤️❤️❤️</div>
+        </div>
+      </div>
+    </div>
+    <canvas id="game-canvas" width="620" height="320"></canvas>
+    <div class="game-message" id="game-message">Tekan START untuk mulai bermain! 🎮</div>
+    <div class="game-controls">
+      <button class="game-btn start" id="start-btn" onclick="startGame()">▶ START</button>
+      <button class="game-btn reset" onclick="resetGame()">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- Math popup for game -->
+  <div id="math-popup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:999; display:none; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:24px; padding:2.5rem; max-width:400px; width:90%; text-align:center; animation:bounceIn 0.3s ease;">
+      <div style="font-size:3rem; margin-bottom:1rem;">🧮</div>
+      <div style="font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; margin-bottom:1.5rem; color:var(--dark);" id="popup-q"></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;" id="popup-opts"></div>
+      <div style="margin-top:1rem; font-size:0.85rem; color:#999;">⏱️ Jawab sebelum waktu habis!</div>
+    </div>
+  </div>
+</section>
+
+<!-- TIPS -->
+<section>
+  <div class="tips-section reveal">
+    <div class="section-title">
+      <div class="pill" style="background:rgba(255,255,255,0.5)">💡 Tips Jitu</div>
+      <h2>Rahasia Jawab Soal Lingkaran!</h2>
+    </div>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">🔢</div>
+        <h4>Hafal Nilai π</h4>
+        <p>π = 3,14 atau ²²⁄₇. Gunakan ²²⁄₇ jika jari-jari kelipatan 7!</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">✏️</div>
+        <h4>Tulis yang Diketahui</h4>
+        <p>Tuliskan r, d, atau α yang diketahui sebelum memilih rumus.</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🧩</div>
+        <h4>Pilih Rumus Tepat</h4>
+        <p>Soal minta keliling? Pakai K=2πr. Minta luas? Pakai L=πr².</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📏</div>
+        <h4>Cek Satuan!</h4>
+        <p>Keliling = satuan (cm, m). Luas = satuan² (cm², m²). Jangan tertukar!</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🎯</div>
+        <h4>r vs d</h4>
+        <p>Soal sering beri diameter! Ingat: r = d/2 sebelum masukkan rumus.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <h3>⭕ CircleMath</h3>
+  <p>Belajar lingkaran jadi seru, mudah, dan menyenangkan!</p>
+  <p style="margin-top:0.5rem;">Matematika bukan momok — matematika itu indah! 🌟</p>
+</footer>
+
+<script>
+// ===== SCROLL HELPER =====
+function goTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ===== HERO CANVAS =====
+const heroCanvas = document.getElementById('hero-canvas');
+const hCtx = heroCanvas.getContext('2d');
+let heroAngle = 0;
+
+function drawHero() {
+  hCtx.clearRect(0, 0, 360, 260);
+  const cx = 180, cy = 130;
+  
+  // Main circle
+  hCtx.beginPath();
+  hCtx.arc(cx, cy, 100, 0, Math.PI * 2);
+  hCtx.strokeStyle = '#FF6B35';
+  hCtx.lineWidth = 4;
+  hCtx.stroke();
+  
+  // Animated juring
+  hCtx.beginPath();
+  hCtx.moveTo(cx, cy);
+  hCtx.arc(cx, cy, 100, -Math.PI/2, -Math.PI/2 + heroAngle);
+  hCtx.closePath();
+  hCtx.fillStyle = 'rgba(255,107,53,0.15)';
+  hCtx.fill();
+  hCtx.strokeStyle = '#FF6B35';
+  hCtx.lineWidth = 2;
+  hCtx.stroke();
+  
+  // Radius lines
+  const ex = cx + 100 * Math.cos(-Math.PI/2 + heroAngle);
+  const ey = cy + 100 * Math.sin(-Math.PI/2 + heroAngle);
+  hCtx.beginPath();
+  hCtx.moveTo(cx, cy);
+  hCtx.lineTo(cx, cy - 100);
+  hCtx.strokeStyle = '#9B5DE5';
+  hCtx.lineWidth = 3;
+  hCtx.stroke();
+  hCtx.beginPath();
+  hCtx.moveTo(cx, cy);
+  hCtx.lineTo(ex, ey);
+  hCtx.strokeStyle = '#FF4D8D';
+  hCtx.lineWidth = 3;
+  hCtx.stroke();
+  
+  // Diameter
+  hCtx.beginPath();
+  hCtx.moveTo(cx - 100, cy);
+  hCtx.lineTo(cx + 100, cy);
+  hCtx.strokeStyle = '#00BBF9';
+  hCtx.lineWidth = 2;
+  hCtx.setLineDash([6, 4]);
+  hCtx.stroke();
+  hCtx.setLineDash([]);
+  
+  // Center point
+  hCtx.beginPath();
+  hCtx.arc(cx, cy, 6, 0, Math.PI * 2);
+  hCtx.fillStyle = '#1A1A2E';
+  hCtx.fill();
+  
+  // Labels
+  hCtx.font = 'bold 14px Nunito';
+  hCtx.fillStyle = '#9B5DE5';
+  hCtx.fillText('r', cx + 10, cy - 50);
+  hCtx.fillStyle = '#00BBF9';
+  hCtx.fillText('d (diameter)', cx - 45, cy - 12);
+  hCtx.fillStyle = '#1A1A2E';
+  hCtx.fillText('O', cx + 10, cy + 5);
+  
+  // Angle label
+  const deg = Math.round(heroAngle * 180 / Math.PI) % 360;
+  hCtx.font = 'bold 16px Baloo 2, cursive';
+  hCtx.fillStyle = '#FF6B35';
+  hCtx.fillText('α = ' + deg + '°', cx - 160, cy + 110);
+  
+  heroAngle += 0.015;
+  if (heroAngle > Math.PI * 2) heroAngle = 0;
+  requestAnimationFrame(drawHero);
+}
+drawHero();
+
+// ===== INTERACTIVE DIAGRAM =====
+const dCanvas = document.getElementById('diagram-canvas');
+const dCtx = dCanvas.getContext('2d');
+const rSlider = document.getElementById('r-slider');
+const aSlider = document.getElementById('a-slider');
+
+function drawDiagram() {
+  const r = parseInt(rSlider.value);
+  const aDeg = parseInt(aSlider.value);
+  const a = aDeg * Math.PI / 180;
+  const cx = 160, cy = 160;
+  
+  document.getElementById('r-val').textContent = r;
+  document.getElementById('a-val').textContent = aDeg;
+  
+  const pi = Math.PI;
+  const K = (2 * pi * r).toFixed(2);
+  const L = (pi * r * r).toFixed(2);
+  const PB = (aDeg / 360 * 2 * pi * r).toFixed(2);
+  const LJ = (aDeg / 360 * pi * r * r).toFixed(2);
+  
+  document.getElementById('res-k').textContent = K;
+  document.getElementById('res-l').textContent = L;
+  document.getElementById('res-pb').textContent = PB;
+  document.getElementById('res-lj').textContent = LJ;
+  
+  dCtx.clearRect(0, 0, 320, 320);
+  
+  // Grid
+  dCtx.strokeStyle = '#f0f0f0';
+  dCtx.lineWidth = 1;
+  for (let i = 0; i <= 320; i += 40) {
+    dCtx.beginPath(); dCtx.moveTo(i, 0); dCtx.lineTo(i, 320); dCtx.stroke();
+    dCtx.beginPath(); dCtx.moveTo(0, i); dCtx.lineTo(320, i); dCtx.stroke();
+  }
+  
+  // Juring (fill)
+  dCtx.beginPath();
+  dCtx.moveTo(cx, cy);
+  dCtx.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + a);
+  dCtx.closePath();
+  dCtx.fillStyle = 'rgba(0,245,212,0.25)';
+  dCtx.fill();
+  dCtx.strokeStyle = '#00F5D4';
+  dCtx.lineWidth = 2;
+  dCtx.stroke();
+  
+  // Circle
+  dCtx.beginPath();
+  dCtx.arc(cx, cy, r, 0, Math.PI * 2);
+  dCtx.strokeStyle = '#FF6B35';
+  dCtx.lineWidth = 3;
+  dCtx.stroke();
+  
+  // Arc highlight
+  dCtx.beginPath();
+  dCtx.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + a);
+  dCtx.strokeStyle = '#FF4D8D';
+  dCtx.lineWidth = 5;
+  dCtx.stroke();
+  
+  // Diameter
+  dCtx.beginPath();
+  dCtx.moveTo(cx - r, cy);
+  dCtx.lineTo(cx + r, cy);
+  dCtx.strokeStyle = '#00BBF9';
+  dCtx.lineWidth = 2;
+  dCtx.setLineDash([6, 4]);
+  dCtx.stroke();
+  dCtx.setLineDash([]);
+  
+  // Radius r1
+  dCtx.beginPath();
+  dCtx.moveTo(cx, cy);
+  dCtx.lineTo(cx, cy - r);
+  dCtx.strokeStyle = '#9B5DE5';
+  dCtx.lineWidth = 2.5;
+  dCtx.stroke();
+  
+  // Radius r2
+  const ex2 = cx + r * Math.cos(-Math.PI/2 + a);
+  const ey2 = cy + r * Math.sin(-Math.PI/2 + a);
+  dCtx.beginPath();
+  dCtx.moveTo(cx, cy);
+  dCtx.lineTo(ex2, ey2);
+  dCtx.strokeStyle = '#9B5DE5';
+  dCtx.lineWidth = 2.5;
+  dCtx.stroke();
+  
+  // Center
+  dCtx.beginPath();
+  dCtx.arc(cx, cy, 5, 0, Math.PI * 2);
+  dCtx.fillStyle = '#1A1A2E';
+  dCtx.fill();
+  
+  // Labels
+  dCtx.font = 'bold 13px Nunito';
+  dCtx.fillStyle = '#1A1A2E';
+  dCtx.fillText('O', cx + 7, cy - 7);
+  dCtx.fillStyle = '#9B5DE5';
+  dCtx.fillText('r', cx + 6, cy - r/2);
+  dCtx.fillStyle = '#00BBF9';
+  dCtx.fillText('d', cx + 4, cy - 8);
+  dCtx.fillStyle = '#FF4D8D';
+  dCtx.fillText('busur', cx + r * 0.5 * Math.cos(-Math.PI/2 + a/2) + 5, cy + r * 0.5 * Math.sin(-Math.PI/2 + a/2));
+}
+
+rSlider.addEventListener('input', drawDiagram);
+aSlider.addEventListener('input', drawDiagram);
+drawDiagram();
+
+// ===== QUIZ =====
+const questions = [
+  {
+    q: "Jika jari-jari lingkaran adalah 7 cm, berapakah kelilingnya? (π = ²²⁄₇)",
+    opts: ["22 cm", "44 cm", "154 cm", "88 cm"],
+    ans: 1,
+    exp: "K = 2πr = 2 × (22/7) × 7 = 44 cm ✅"
+  },
+  {
+    q: "Luas lingkaran dengan diameter 14 cm adalah... (π = ²²⁄₇)",
+    opts: ["44 cm²", "154 cm²", "88 cm²", "616 cm²"],
+    ans: 1,
+    exp: "r = 14/2 = 7 cm. L = πr² = (22/7) × 7² = 154 cm² ✅"
+  },
+  {
+    q: "Sebuah lingkaran memiliki keliling 62,8 cm. Berapakah jari-jarinya? (π = 3,14)",
+    opts: ["5 cm", "10 cm", "20 cm", "15 cm"],
+    ans: 1,
+    exp: "K = 2πr → 62,8 = 2 × 3,14 × r → r = 10 cm ✅"
+  },
+  {
+    q: "Panjang busur lingkaran dengan jari-jari 10 cm dan sudut pusat 90° adalah... (π = 3,14)",
+    opts: ["5,7 cm", "15,7 cm", "31,4 cm", "7,85 cm"],
+    ans: 1,
+    exp: "PB = (90/360) × 2 × 3,14 × 10 = ¼ × 62,8 = 15,7 cm ✅"
+  },
+  {
+    q: "Luas juring dengan jari-jari 6 cm dan sudut 120° adalah... (π = 3,14)",
+    opts: ["37,68 cm²", "18,84 cm²", "113,04 cm²", "12,56 cm²"],
+    ans: 0,
+    exp: "LJ = (120/360) × 3,14 × 36 = ⅓ × 113,04 = 37,68 cm² ✅"
+  },
+  {
+    q: "Jika diameter lingkaran bertambah 2 kali, luasnya menjadi...",
+    opts: ["2 kali", "4 kali", "8 kali", "Tetap sama"],
+    ans: 1,
+    exp: "L = πr². Jika d → 2d, maka r → 2r. L_baru = π(2r)² = 4πr². Luas menjadi 4 kali! ✅"
+  },
+  {
+    q: "Titik yang berjarak sama dari semua titik pada lingkaran disebut...",
+    opts: ["Tali busur", "Busur", "Titik pusat", "Juring"],
+    ans: 2,
+    exp: "Titik pusat (O) adalah titik yang berjarak sama (= jari-jari) dari semua titik pada lingkaran ✅"
+  },
+  {
+    q: "Sebuah lapangan berbentuk lingkaran berdiameter 28 m. Biaya memagari Rp 15.000/m. Total biaya adalah... (π = ²²⁄₇)",
+    opts: ["Rp 1.320.000", "Rp 660.000", "Rp 2.640.000", "Rp 880.000"],
+    ans: 0,
+    exp: "K = πd = (22/7) × 28 = 88 m. Biaya = 88 × 15.000 = Rp 1.320.000 ✅"
+  },
+  {
+    q: "Keliling roda sepeda 176 cm. Berapa kali roda berputar untuk menempuh 352 m? (π = ²²⁄₇)",
+    opts: ["100 kali", "200 kali", "150 kali", "50 kali"],
+    ans: 1,
+    exp: "Jarak = 352 m = 35.200 cm. Putaran = 35.200 / 176 = 200 kali ✅"
+  },
+  {
+    q: "Dua lingkaran memiliki jari-jari 5 cm dan 3 cm. Selisih luasnya adalah... (π = 3,14)",
+    opts: ["25,12 cm²", "50,24 cm²", "12,56 cm²", "6,28 cm²"],
+    ans: 0,
+    exp: "L₁ = 3,14 × 25 = 78,5. L₂ = 3,14 × 9 = 28,26. Selisih = 78,5 - 28,26 = 50,24... Ups! Jawaban = 50,24 cm² ✅"
+  }
+];
+
+// Fix question 10
+questions[9].ans = 1;
+questions[9].exp = "L₁ = 3,14 × 5² = 78,5. L₂ = 3,14 × 3² = 28,26. Selisih = 78,5 - 28,26 = 50,24 cm² ✅";
+questions[9].opts = ["78,5 cm²", "50,24 cm²", "28,26 cm²", "6,28 cm²"];
+
+let curQ = 0, score = 0, answered = false;
+
+function initQuiz() {
+  const prog = document.getElementById('quiz-progress');
+  prog.innerHTML = '';
+  for (let i = 0; i < questions.length; i++) {
+    const d = document.createElement('div');
+    d.className = 'quiz-dot' + (i === 0 ? ' current' : '');
+    prog.appendChild(d);
+  }
+  document.getElementById('total-display').textContent = questions.length;
+  loadQuestion();
+}
+
+function loadQuestion() {
+  answered = false;
+  const q = questions[curQ];
+  document.getElementById('quiz-q').textContent = `${curQ + 1}. ${q.q}`;
+  const opts = document.getElementById('quiz-opts');
+  opts.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
+    btn.onclick = () => checkAnswer(i);
+    opts.appendChild(btn);
+  });
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('score-display').textContent = score;
+  updateProgress();
+}
+
+function checkAnswer(i) {
+  if (answered) return;
+  answered = true;
+  const q = questions[curQ];
+  const opts = document.querySelectorAll('.quiz-option');
+  opts.forEach(o => o.classList.add('disabled'));
+  opts[q.ans].classList.add('correct');
+  const feedback = document.getElementById('quiz-feedback');
+  if (i === q.ans) {
+    score++;
+    opts[i].classList.add('correct');
+    feedback.className = 'quiz-feedback correct show';
+    feedback.innerHTML = '🎉 Benar sekali! ' + q.exp;
+  } else {
+    opts[i].classList.add('wrong');
+    feedback.className = 'quiz-feedback wrong show';
+    feedback.innerHTML = '❌ Kurang tepat. ' + q.exp;
+  }
+  document.getElementById('score-display').textContent = score;
+  if (curQ < questions.length - 1) {
+    document.getElementById('next-btn').style.display = 'inline-flex';
+  } else {
+    setTimeout(showResult, 1200);
+  }
+}
+
+function nextQuestion() {
+  curQ++;
+  loadQuestion();
+}
+
+function updateProgress() {
+  const dots = document.querySelectorAll('.quiz-dot');
+  dots.forEach((d, i) => {
+    d.className = 'quiz-dot';
+    if (i < curQ) d.classList.add('done');
+    else if (i === curQ) d.classList.add('current');
+  });
+}
+
+function showResult() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const res = document.getElementById('quiz-result');
+  res.style.display = 'block';
+  const pct = score / questions.length;
+  const stars = pct >= 0.9 ? '⭐⭐⭐' : pct >= 0.7 ? '⭐⭐' : '⭐';
+  const msg = pct >= 0.9 ? 'Luar biasa! Kamu Jenius Lingkaran! 🏆' : pct >= 0.7 ? 'Bagus sekali! Terus berlatih! 💪' : 'Jangan menyerah! Pelajari lagi materi di atas! 📚';
+  const color = pct >= 0.9 ? 'var(--green)' : pct >= 0.7 ? 'var(--blue)' : 'var(--orange)';
+  res.innerHTML = `
+    <div class="score-big" style="color:${color}">${score}/${questions.length}</div>
+    <div class="stars">${stars}</div>
+    <p><strong>${msg}</strong></p>
+    <button class="btn btn-primary" style="margin-top:1.5rem" onclick="restartQuiz()">🔄 Coba Lagi</button>
+  `;
+}
+
+function restartQuiz() {
+  curQ = 0; score = 0; answered = false;
+  document.getElementById('quiz-area').style.display = 'block';
+  document.getElementById('quiz-result').style.display = 'none';
+  initQuiz();
+}
+
+initQuiz();
+
+// ===== GAME =====
+const gc = document.getElementById('game-canvas');
+const gCtx = gc.getContext('2d');
+let gameRunning = false, gameScore = 0, gameLevel = 1, gameLives = 3;
+let circles = [], gameLoop = null, spawnTimer = null;
+
+const gameMathQ = [
+  { q: "K = 2πr, r=7,\nπ=22/7. K=?", opts: ["44","22","88","14"], ans: 0 },
+  { q: "L = πr², r=5,\nπ=3,14. L=?", opts: ["78,5","31,4","157","15,7"], ans: 0 },
+  { q: "d = 20 cm.\nr = ?", opts: ["10 cm","20 cm","40 cm","5 cm"], ans: 0 },
+  { q: "r=7, K=?\n(π=22/7)", opts: ["44","14","22","88"], ans: 0 },
+  { q: "Busur 90°, r=4,\nπ=3,14. PB=?", opts: ["6,28","12,56","3,14","25,12"], ans: 0 },
+  { q: "Juring 180°, r=5,\nπ=3,14. LJ=?", opts: ["39,25","78,5","19,625","157"], ans: 0 },
+  { q: "L=πr², r=10,\nπ=3,14. L=?", opts: ["314","31,4","628","157"], ans: 0 },
+];
+
+const COLORS = ['#FF6B35','#FF4D8D','#9B5DE5','#00BBF9','#FFD93D','#00F5D4'];
+
+function spawnCircle() {
+  if (!gameRunning) return;
+  const r = 35 + Math.random() * 20;
+  const x = r + Math.random() * (gc.width - r * 2);
+  const y = r + Math.random() * (gc.height - r * 2);
+  const q = gameMathQ[Math.floor(Math.random() * gameMathQ.length)];
+  const lifetime = Math.max(2500, 4000 - gameLevel * 300);
+  circles.push({
+    x, y, r,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    born: Date.now(),
+    lifetime,
+    q,
+    pulse: 0,
+    label: q.q.split('\n')[0].slice(0,12)
+  });
+}
+
+function drawGame() {
+  gCtx.clearRect(0, 0, gc.width, gc.height);
+  
+  // Background
+  gCtx.fillStyle = '#0d1117';
+  gCtx.fillRect(0, 0, gc.width, gc.height);
+  
+  // Grid dots
+  gCtx.fillStyle = 'rgba(255,255,255,0.05)';
+  for (let x = 20; x < gc.width; x += 40)
+    for (let y = 20; y < gc.height; y += 40) {
+      gCtx.beginPath();
+      gCtx.arc(x, y, 1.5, 0, Math.PI * 2);
+      gCtx.fill();
+    }
+  
+  const now = Date.now();
+  circles = circles.filter(c => {
+    const age = (now - c.born) / c.lifetime;
+    if (age >= 1) {
+      gameLives--;
+      updateGameUI();
+      if (gameLives <= 0) endGame();
+      return false;
+    }
+    
+    c.pulse += 0.08;
+    const scale = 1 + Math.sin(c.pulse) * 0.05;
+    const alpha = 1 - age * 0.5;
+    
+    // Timer arc (shrinking)
+    gCtx.beginPath();
+    gCtx.arc(c.x, c.y, c.r + 5, -Math.PI/2, -Math.PI/2 + (1 - age) * 2 * Math.PI);
+    gCtx.strokeStyle = c.color;
+    gCtx.lineWidth = 4;
+    gCtx.globalAlpha = 0.6;
+    gCtx.stroke();
+    gCtx.globalAlpha = 1;
+    
+    // Circle fill
+    gCtx.beginPath();
+    gCtx.arc(c.x, c.y, c.r * scale, 0, Math.PI * 2);
+    gCtx.fillStyle = c.color + '33';
+    gCtx.fill();
+    gCtx.strokeStyle = c.color;
+    gCtx.lineWidth = 3;
+    gCtx.stroke();
+    
+    // Label
+    gCtx.fillStyle = 'white';
+    gCtx.font = 'bold 11px Nunito';
+    gCtx.textAlign = 'center';
+    gCtx.fillText('KLIK!', c.x, c.y - 5);
+    gCtx.font = 'bold 10px Nunito';
+    gCtx.fillStyle = c.color;
+    gCtx.fillText(c.label + '..', c.x, c.y + 10);
+    
+    return true;
+  });
+  
+  if (gameRunning) requestAnimationFrame(drawGame);
+}
+
+function showMathPopup(circle) {
+  const popup = document.getElementById('math-popup');
+  const qEl = document.getElementById('popup-q');
+  const optsEl = document.getElementById('popup-opts');
+  qEl.textContent = circle.q.q.replace('\n', ' ');
+  optsEl.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  circle.q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.style.cssText = `padding:12px; border-radius:12px; border:3px solid #eee; font-weight:800; font-size:1rem; cursor:pointer; background:white; transition:all 0.2s;`;
+    btn.textContent = letters[i] + '. ' + opt;
+    btn.onmouseover = () => btn.style.background = '#f0faff';
+    btn.onmouseout = () => btn.style.background = 'white';
+    btn.onclick = () => {
+      popup.style.display = 'none';
+      gameRunning = true;
+      if (i === circle.q.ans) {
+        gameScore += 10 + gameLevel * 5;
+        document.getElementById('game-message').textContent = '🎉 Benar! +' + (10 + gameLevel * 5) + ' poin!';
+        if (gameScore >= gameLevel * 50) { gameLevel++; document.getElementById('g-level').textContent = gameLevel; }
+        updateGameUI();
+        drawGame();
+      } else {
+        gameLives--;
+        document.getElementById('game-message').textContent = '❌ Salah! Jawaban: ' + circle.q.opts[circle.q.ans];
+        updateGameUI();
+        if (gameLives <= 0) { endGame(); return; }
+        drawGame();
+      }
+    };
+    optsEl.appendChild(btn);
+  });
+  popup.style.display = 'flex';
+}
+
+gc.addEventListener('click', (e) => {
+  if (!gameRunning) return;
+  const rect = gc.getBoundingClientRect();
+  const scaleX = gc.width / rect.width;
+  const scaleY = gc.height / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top) * scaleY;
+  
+  for (let i = circles.length - 1; i >= 0; i--) {
+    const c = circles[i];
+    const dist = Math.hypot(mx - c.x, my - c.y);
+    if (dist <= c.r) {
+      circles.splice(i, 1);
+      gameRunning = false;
+      clearInterval(spawnTimer);
+      showMathPopup(c);
+      break;
+    }
+  }
+});
+
+function updateGameUI() {
+  document.getElementById('g-score').textContent = gameScore;
+  document.getElementById('g-lives').textContent = '❤️'.repeat(Math.max(0, gameLives));
+  document.getElementById('g-level').textContent = gameLevel;
+}
+
+function startGame() {
+  gameRunning = true;
+  document.getElementById('start-btn').style.display = 'none';
+  document.getElementById('game-message').textContent = '🎯 Klik lingkaran, lalu jawab soalnya!';
+  circles = [];
+  spawnTimer = setInterval(spawnCircle, Math.max(1200, 2500 - gameLevel * 200));
+  spawnCircle();
+  drawGame();
+}
+
+function resetGame() {
+  gameRunning = false;
+  gameScore = 0; gameLives = 3; gameLevel = 1;
+  circles = [];
+  clearInterval(spawnTimer);
+  cancelAnimationFrame(gameLoop);
+  updateGameUI();
+  gCtx.clearRect(0, 0, gc.width, gc.height);
+  document.getElementById('start-btn').style.display = 'inline-block';
+  document.getElementById('game-message').textContent = 'Tekan START untuk mulai bermain! 🎮';
+  document.getElementById('math-popup').style.display = 'none';
+}
+
+function endGame() {
+  gameRunning = false;
+  clearInterval(spawnTimer);
+  const msg = gameScore >= 100 ? '🏆 Luar biasa! Kamu master lingkaran!' : gameScore >= 50 ? '💪 Bagus! Skor ' + gameScore + '!' : '😢 Game Over! Skor: ' + gameScore;
+  document.getElementById('game-message').textContent = msg;
+  document.getElementById('start-btn').style.display = 'inline-block';
+  document.getElementById('start-btn').textContent = '▶ Main Lagi';
+}
+
+// ===== SCROLL REVEAL =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
