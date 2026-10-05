@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HYPIXEL — Smart Design for a Smart World</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#141311;
+    --bg-alt:#1b1a17;
+    --cream:#f6f1e2;
+    --red:#ff3300;
+    --teal:#5c7d75;
+    --muted:#9a9587;
+    --line: rgba(246,241,226,0.09);
+    --line-strong: rgba(246,241,226,0.16);
+    --radius: 2px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--cream);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--red); color:var(--cream); }
+  h1,h2,h3{ font-family:'Space Grotesk', sans-serif; font-weight:700; letter-spacing:-0.02em; }
+  .mono{ font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:0.14em; font-size:0.72rem; font-weight:500; }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:1200px; margin:0 auto; padding:0 40px; }
+
+  /* pixel grid background */
+  .grid-bg{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events:none;
+  }
+  .dot{
+    position:absolute; border-radius:50%;
+    background:var(--red);
+  }
+
+  /* NAV */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:22px 0;
+    background:rgba(20,19,17,0);
+    transition: background .3s ease, border-color .3s ease, padding .3s ease;
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{ background:rgba(20,19,17,0.92); backdrop-filter:blur(6px); border-color:var(--line); padding:16px 0; }
+  nav{ display:flex; align-items:center; justify-content:space-between; }
+  .logo{ font-family:'Space Grotesk'; font-weight:700; font-size:1.15rem; display:flex; align-items:center; gap:8px; }
+  .logo .pixel{ width:9px; height:9px; background:var(--red); display:inline-block; }
+  .navlinks{ display:flex; gap:36px; }
+  .navlinks a{ font-family:'JetBrains Mono'; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); transition:color .2s; position:relative; }
+  .navlinks a:hover{ color:var(--cream); }
+  .nav-cta{
+    font-family:'JetBrains Mono'; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em;
+    border:1px solid var(--line-strong); padding:9px 18px; transition:all .2s;
+  }
+  .nav-cta:hover{ background:var(--red); border-color:var(--red); color:var(--bg); }
+  .navtoggle{ display:none; }
+
+  /* HERO */
+  .hero{ position:relative; min-height:100vh; display:flex; align-items:center; padding-top:120px; padding-bottom:80px; border-bottom:1px solid var(--line); overflow:hidden; }
+  .hero-inner{ position:relative; z-index:2; }
+  .eyebrow{ color:var(--red); margin-bottom:22px; display:flex; align-items:center; gap:10px; }
+  .eyebrow::before{ content:''; width:24px; height:1px; background:var(--red); display:inline-block; }
+  .hero h1{
+    font-size: clamp(2.6rem, 6.4vw, 5.6rem);
+    line-height:0.98;
+    max-width:14ch;
+  }
+  .hero h1 .accent{ color:var(--red); }
+  .hero-sub{
+    display:grid; grid-template-columns: 1.1fr 0.9fr; gap:60px;
+    margin-top:40px; align-items:end; padding-top:40px; border-top:1px solid var(--line);
+    max-width:920px;
+  }
+  .hero-sub p{ color:var(--muted); font-size:1.02rem; max-width:42ch; }
+  .hero-cta{ display:flex; gap:14px; flex-wrap:wrap; }
+  .btn{
+    font-family:'JetBrains Mono'; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em;
+    padding:15px 26px; display:inline-block; transition:all .2s ease; white-space:nowrap;
+  }
+  .btn-primary{ background:var(--red); color:var(--bg); }
+  .btn-primary:hover{ background:var(--cream); }
+  .btn-ghost{ border:1px solid var(--line-strong); }
+  .btn-ghost:hover{ border-color:var(--cream); }
+
+  /* marquee strip */
+  .strip{ border-bottom:1px solid var(--line); overflow:hidden; background:var(--bg-alt); }
+  .strip-track{ display:flex; gap:64px; padding:16px 0; white-space:nowrap; animation:scroll 26s linear infinite; width:max-content; }
+  .strip-track span{ font-family:'JetBrains Mono'; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.14em; color:var(--muted); display:flex; align-items:center; gap:64px; }
+  .strip-track span::after{ content:'●'; color:var(--red); font-size:0.5rem; }
+  @keyframes scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+
+  section{ padding:130px 0; position:relative; border-bottom:1px solid var(--line); }
+  .section-head{ display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-bottom:70px; align-items:end; }
+  .section-head .mono{ color:var(--red); margin-bottom:16px; display:block; }
+  .section-head h2{ font-size:clamp(1.9rem, 3.4vw, 2.7rem); line-height:1.08; }
+  .section-head p{ color:var(--muted); max-width:40ch; }
+
+  /* ABOUT */
+  .about-grid{ display:grid; grid-template-columns: 0.9fr 1.1fr; gap:80px; align-items:center; }
+  .pixel-art{ position:relative; aspect-ratio:1/1; border:1px solid var(--line-strong); }
+  .pixel-art .cell{ position:absolute; }
+  .about-copy p{ color:var(--muted); font-size:1.06rem; margin-bottom:22px; max-width:48ch; }
+  .about-copy strong{ color:var(--cream); font-weight:600; }
+  .stat-row{ display:flex; gap:50px; margin-top:40px; }
+  .stat{ }
+  .stat .num{ font-family:'Space Grotesk'; font-size:2.2rem; font-weight:700; color:var(--red); line-height:1; }
+  .stat .label{ font-family:'JetBrains Mono'; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); margin-top:8px; }
+
+  /* SERVICES */
+  .services{ background:var(--bg-alt); }
+  .service-list{ border-top:1px solid var(--line); }
+  .service-row{
+    display:grid; grid-template-columns: 90px 1fr 1.3fr 140px; gap:30px; align-items:center;
+    padding:34px 0; border-bottom:1px solid var(--line); transition:background .25s;
+    cursor:default;
+  }
+  .service-row:hover{ background:rgba(255,51,0,0.04); }
+  .service-row .idx{ font-family:'JetBrains Mono'; color:var(--muted); font-size:0.85rem; }
+  .service-row h3{ font-size:1.35rem; font-weight:500; }
+  .service-row p{ color:var(--muted); font-size:0.95rem; }
+  .service-row .tags{ font-family:'JetBrains Mono'; font-size:0.68rem; color:var(--red); text-align:right; text-transform:uppercase; letter-spacing:0.08em; }
+
+  /* VALUES */
+  .values-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .value-card{ background:var(--bg); padding:38px 28px; }
+  .value-card .dotmark{ width:10px; height:10px; border-radius:50%; background:var(--teal); margin-bottom:26px; }
+  .value-card h3{ font-size:1.1rem; margin-bottom:12px; font-weight:600; }
+  .value-card p{ color:var(--muted); font-size:0.92rem; }
+
+  /* CAREERS */
+  .careers{ background:var(--bg-alt); }
+  .careers-inner{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:70px; }
+  .job-card{
+    border:1px solid var(--line-strong); padding:36px; position:relative; margin-bottom:20px;
+  }
+  .job-card .badge{ font-family:'JetBrains Mono'; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); border:1px solid var(--teal); display:inline-block; padding:4px 10px; margin-bottom:18px; }
+  .job-card h3{ font-size:1.5rem; margin-bottom:12px; }
+  .job-card p{ color:var(--muted); font-size:0.95rem; margin-bottom:22px; max-width:48ch; }
+  .job-meta{ display:flex; gap:24px; font-family:'JetBrains Mono'; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:24px; flex-wrap:wrap; }
+  .job-meta strong{ color:var(--cream); }
+  .deadline-box{ border:1px solid var(--red); padding:26px 30px; margin-top:20px; }
+  .deadline-box .mono{ color:var(--red); }
+  .deadline-box .date{ font-family:'Space Grotesk'; font-size:1.6rem; font-weight:700; margin-top:8px; }
+  .side-list{ display:flex; flex-direction:column; gap:0; }
+  .side-list .item{ padding:20px 0; border-bottom:1px solid var(--line); }
+  .side-list h4{ font-family:'JetBrains Mono'; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--red); margin-bottom:8px; }
+  .side-list p{ color:var(--muted); font-size:0.9rem; }
+
+  /* CONTACT / FOOTER */
+  footer{ padding:110px 0 40px; position:relative; }
+  .footer-cta{ text-align:left; margin-bottom:90px; }
+  .footer-cta h2{ font-size:clamp(2.2rem,5vw,4rem); max-width:16ch; line-height:1.02; }
+  .footer-cta .mono{ color:var(--red); margin-bottom:20px; display:block; }
+  .contact-row{ display:flex; gap:50px; margin-top:44px; flex-wrap:wrap; }
+  .contact-row a{ font-family:'Space Grotesk'; font-size:1.3rem; border-bottom:1px solid var(--line-strong); padding-bottom:6px; transition:border-color .2s, color .2s; }
+  .contact-row a:hover{ color:var(--red); border-color:var(--red); }
+  .foot-bottom{ display:flex; justify-content:space-between; align-items:center; padding-top:40px; border-top:1px solid var(--line); flex-wrap:wrap; gap:20px; }
+  .foot-bottom .mono{ color:var(--muted); }
+  .foot-links{ display:flex; gap:28px; }
+  .foot-links a{ font-family:'JetBrains Mono'; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); }
+  .foot-links a:hover{ color:var(--cream); }
+
+  /* reveal */
+  .reveal{ opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:900px){
+    .navlinks{ display:none; }
+    .hero-sub{ grid-template-columns:1fr; }
+    .about-grid{ grid-template-columns:1fr; }
+    .section-head{ grid-template-columns:1fr; }
+    .values-grid{ grid-template-columns:repeat(2,1fr); }
+    .service-row{ grid-template-columns:40px 1fr; row-gap:8px; }
+    .service-row p, .service-row .tags{ grid-column:2; text-align:left; }
+    .careers-inner{ grid-template-columns:1fr; }
+    .wrap{ padding:0 22px; }
+    .contact-row{ flex-direction:column; gap:20px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="wrap">
+    <nav>
+      <a href="#top" class="logo"><span class="pixel"></span>HYPIXEL</a>
+      <div class="navlinks">
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#values">Values</a>
+        <a href="#careers">Careers</a>
+      </div>
+      <a href="#contact" class="nav-cta">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="grid-bg"></div>
+  <div class="dot" style="width:18px;height:18px; top:16%; left:6%;"></div>
+  <div class="dot" style="width:10px;height:10px; top:62%; left:11%; background:var(--teal);"></div>
+  <div class="dot" style="width:7px;height:7px; top:78%; left:22%;"></div>
+  <div class="wrap hero-inner">
+    <span class="eyebrow mono">Smart design for a smart world</span>
+    <h1>We turn ideas into<br><span class="accent">digital experiences.</span></h1>
+    <div class="hero-sub">
+      <p>HYPIXEL is a technology company building websites and web applications that help businesses grow their digital presence — through clean code, sharp design, and a little creative obsession.</p>
+      <div class="hero-cta">
+        <a href="#services" class="btn btn-primary">What we do</a>
+        <a href="#careers" class="btn btn-ghost">We're hiring</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="strip-track">
+    <span>Web Development</span><span>Web Applications</span><span>UI / UX Design</span><span>Digital Strategy</span><span>Maintenance & Support</span>
+    <span>Web Development</span><span>Web Applications</span><span>UI / UX Design</span><span>Digital Strategy</span><span>Maintenance & Support</span>
+  </div>
+</div>
+
+<section id="about">
+  <div class="wrap">
+    <div class="about-grid reveal">
+      <div class="pixel-art" id="pixelArt"></div>
+      <div class="about-copy">
+        <span class="mono" style="color:var(--red); display:block; margin-bottom:18px;">About Hypixel</span>
+        <h2 style="font-size:clamp(1.8rem,3vw,2.4rem); margin-bottom:24px; max-width:14ch;">Every pixel has a purpose.</h2>
+        <p><strong>HYPIXEL</strong> is a technology company focused on creating innovative websites and web applications that help businesses and organizations improve their digital presence.</p>
+        <p>We work at the intersection of creativity, technology, and innovation — building modern digital experiences one deliberate detail at a time.</p>
+        <div class="stat-row">
+          <div class="stat"><div class="num">120+</div><div class="label">Projects shipped</div></div>
+          <div class="stat"><div class="num">40+</div><div class="label">Partner businesses</div></div>
+          <div class="stat"><div class="num">6</div><div class="label">Years building</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services" class="services">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="mono">What we build</span>
+        <h2>Full-stack digital<br>craftsmanship.</h2>
+      </div>
+      <p>From first sketch to production deploy — we design, build, and maintain the digital products our clients depend on.</p>
+    </div>
+    <div class="service-list reveal">
+      <div class="service-row">
+        <span class="idx">01</span>
+        <h3>Web Development</h3>
+        <p>Responsive, fast, and accessible websites built with modern HTML, CSS, and JavaScript.</p>
+        <span class="tags">Frontend</span>
+      </div>
+      <div class="service-row">
+        <span class="idx">02</span>
+        <h3>Web Applications</h3>
+        <p>Custom applications backed by solid PHP / MySQL foundations, built to scale with your business.</p>
+        <span class="tags">Full-stack</span>
+      </div>
+      <div class="service-row">
+        <span class="idx">03</span>
+        <h3>UI / UX Design</h3>
+        <p>Interfaces designed around real user behaviour — clear, intentional, and easy to navigate.</p>
+        <span class="tags">Design</span>
+      </div>
+      <div class="service-row">
+        <span class="idx">04</span>
+        <h3>Maintenance & Support</h3>
+        <p>Ongoing care after launch — updates, monitoring, and version control through Git.</p>
+        <span class="tags">Ops</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="values">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="mono">Innovate tomorrow</span>
+        <h2>How we work,<br>every day.</h2>
+      </div>
+      <p>A friendly, inclusive, and collaborative environment that values teamwork and innovation.</p>
+    </div>
+    <div class="values-grid reveal">
+      <div class="value-card"><div class="dotmark"></div><h3>Creativity</h3><p>We treat every problem as a design problem worth solving well.</p></div>
+      <div class="value-card"><div class="dotmark"></div><h3>Craftsmanship</h3><p>Attention to detail, from the first commit to final deploy.</p></div>
+      <div class="value-card"><div class="dotmark"></div><h3>Collaboration</h3><p>Strong communication and teamwork across every project.</p></div>
+      <div class="value-card"><div class="dotmark"></div><h3>Growth</h3><p>A willingness to learn and adapt to new technologies, always.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="careers" class="careers">
+  <div class="wrap">
+    <div class="careers-inner reveal">
+      <div>
+        <span class="mono" style="color:var(--red); display:block; margin-bottom:18px;">Open Recruitment</span>
+        <div class="job-card">
+          <span class="badge">Hiring now</span>
+          <h3>Junior Web Developer</h3>
+          <p>We're looking for a Junior Web Developer to develop, maintain, and improve responsive websites and web applications — working closely with our development team to create user-friendly digital solutions.</p>
+          <div class="job-meta">
+            <span><strong>Type</strong> · Full-time</span>
+            <span><strong>Location</strong> · Hybrid</span>
+            <span><strong>Team</strong> · Development</span>
+          </div>
+          <a href="#contact" class="btn btn-primary">Apply now</a>
+        </div>
+        <div class="deadline-box">
+          <span class="mono">Application deadline</span>
+          <div class="date">31 August 2026</div>
+        </div>
+      </div>
+      <div class="side-list">
+        <div class="item">
+          <h4>Technical skills</h4>
+          <p>Good understanding of HTML, CSS, and JavaScript, with basic knowledge of PHP, MySQL, responsive design, and Git.</p>
+        </div>
+        <div class="item">
+          <h4>Soft skills</h4>
+          <p>Strong communication and teamwork, problem-solving, creativity, attention to detail, and a willingness to learn.</p>
+        </div>
+        <div class="item">
+          <h4>What we offer</h4>
+          <p>Competitive salary, professional training, ongoing mentoring, and hands-on experience with real projects.</p>
+        </div>
+        <div class="item">
+          <h4>How to apply</h4>
+          <p>Send your CV and portfolio with the subject "Application – Junior Web Developer".</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="footer-cta reveal">
+      <span class="mono">Let's build something</span>
+      <h2>Have a project in mind? Or just want to say hi?</h2>
+      <div class="contact-row">
+        <a href="mailto:hello@hypixel.com">hello@hypixel.com</a>
+        <a href="#">Instagram</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">GitHub</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span class="mono"><span class="pixel" style="display:inline-block;width:7px;height:7px;background:var(--red);margin-right:8px;"></span>© 2026 Hypixel. Innovate tomorrow.</span>
+      <div class="foot-links">
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#careers">Careers</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // header scroll state
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 30);
+  });
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // pixel art grid — generated mosaic reflecting the brand mark
+  const pixelArt = document.getElementById('pixelArt');
+  const cols = 8, rows = 8;
+  const palette = ['var(--red)','var(--teal)','var(--cream)', 'transparent','transparent','transparent'];
+  const seed = [
+    0,0,0,1,1,0,0,0,
+    0,0,1,1,1,1,0,0,
+    0,1,1,2,2,1,1,0,
+    1,1,2,3,3,2,1,1,
+    1,1,2,3,3,2,1,1,
+    0,1,1,2,2,1,1,0,
+    0,0,1,1,1,1,0,0,
+    0,0,0,1,1,0,0,0
+  ];
+  const colorFor = (v) => v===3 ? 'var(--red)' : v===2 ? 'var(--teal)' : v===1 ? 'rgba(246,241,226,0.35)' : 'transparent';
+  seed.forEach((v,i) => {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    const c = i % cols, r = Math.floor(i/cols);
+    cell.style.left = (c/cols*100)+'%';
+    cell.style.top = (r/rows*100)+'%';
+    cell.style.width = (100/cols)+'%';
+    cell.style.height = (100/rows)+'%';
+    cell.style.background = colorFor(v);
+    cell.style.transition = 'transform .3s ease, background .3s ease';
+    cell.addEventListener('mouseenter', () => { cell.style.transform = 'scale(0.85)'; });
+    cell.addEventListener('mouseleave', () => { cell.style.transform = 'scale(1)'; });
+    pixelArt.appendChild(cell);
+  });
+</script>
+
+</body>
+</html>
